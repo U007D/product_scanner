@@ -1,0 +1,38 @@
+[package]
+name = "senior_software_consultant"
+version = "0.1.0"
+authors = ["Brad Gibson <b2b@humanenginuity.com>"]
+edition = "2018"
+
+[dependencies]
+structopt = "*"
+derive_more = "*"
+
+[profile.dev]
+codegen-units = 1
+debug = true
+debug-assertions = true
+lto = false
+opt-level = 0
+panic = "unwind"
+rpath = false
+
+[profile.release]
+codegen-units = 1
+debug = false
+debug-assertions = false
+lto = true
+opt-level = 3
+panic = "unwind"
+rpath = false
+
+[profile.test]
+codegen-units = 1
+debug = true
+debug-assertions = true
+lto = false
+opt-level = 0
+rpath = false
+
+[dev-dependencies]
+rspec = "1.0.0-beta.4"
