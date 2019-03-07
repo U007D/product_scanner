@@ -1,6 +1,7 @@
 #![allow(clippy::option_unwrap_used, clippy::result_unwrap_used)]
 use super::*;
 use crate::price_mapping::PriceMapping;
+use ordered_float::NotNan;
 use std::num::NonZeroU32;
 
 #[test]
@@ -18,12 +19,12 @@ fn build_empty_product_list_fails() {
 #[test]
 fn build_after_adding_valid_product_pricing_yields_valid_price_list() {
     // environment
-    let (prod, price, quantity) = (Product::A, 0.99, NonZeroU32::new(1).unwrap());
+    let (prod, price, quantity) = (Product::A, NotNan::new(0.99).unwrap(), NonZeroU32::new(1).unwrap());
     let mapping = PriceMapping::new(price, quantity).unwrap();
 
     // given a price list builder with a valid price list
     let mut builder = PriceListBuilder::new();
-    builder.set_pricing(prod, mapping);
+    builder.set_pricing(prod, mapping.clone());
 
     // when adding a valid product and pricing entry before building
     let result = builder.build();
@@ -35,9 +36,6 @@ fn build_after_adding_valid_product_pricing_yields_valid_price_list() {
     // and the price mapping should contain the correct values
     #[allow(clippy::indexing_slicing, clippy::float_cmp)]
     {
-        let entry = &result.map[&prod];
-        assert_eq!(entry[0].unit_price, price / f64::from(u32::from(quantity)));
-        assert_eq!(entry[0].price, price);
-        assert_eq!(entry[0].quantity, quantity);
+        assert_eq!(result.prices[&prod].get(&mapping).is_some(), true);
     }
 }

@@ -3,8 +3,8 @@ use crate::{
     Product
 };
 use derive_more::*;
-use std::num::NonZeroU32;
 use crate::price_mapping::PriceMapping;
+use ordered_float::FloatIsNan;
 
 #[derive(Clone, Debug, Display, From, PartialEq)]
 pub enum Error {
@@ -14,6 +14,6 @@ pub enum Error {
     EmptyProductPricingTable,
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_INTERNAL_KVP_ALREADY_PRESENT", "_0", "_1")]
     KvpAlreadyPresent(Product, Vec<PriceMapping>),
-    #[display(fmt = "{}: {}/{}", "msg::ERR_UNIT_PRICE_NOT_REPRESENTABLE", "_0", "_1")]
-    UnitPriceNotRepresentable(f64, NonZeroU32),
+    #[display(fmt = "{}: {}", "msg::ERR_UNREPRESENTABLE_PRICE", "_0")]
+    UnrepresentablePrice(FloatIsNan),
 }

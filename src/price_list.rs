@@ -1,5 +1,4 @@
-#[cfg(test)]
-mod unit_tests;
+use std::collections::{BTreeSet, HashMap};
 
 use crate::{
     Error,
@@ -7,7 +6,31 @@ use crate::{
     Product,
     Result,
 };
-use std::collections::HashMap;
+#[cfg(test)]
+mod unit_tests;
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct PriceList {
+    prices: HashMap<Product, BTreeSet<PriceMapping>>,
+}
+
+impl PriceList {
+    pub fn new() -> Self {
+        Self {
+            prices: HashMap::<Product, BTreeSet<PriceMapping>>::new()
+        }
+    }
+
+    fn add_entry(&mut self, product: Product, price_mapping: PriceMapping) -> &mut Self {
+        self.prices.entry(product)
+            .or_insert_with(BTreeSet::<PriceMapping>::new)
+            .insert(price_mapping);
+        self
+    }
+
+    #[inline]
+    pub fn len(&self) -> usize { self.prices.len() }
+}
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PriceListBuilder {
@@ -34,25 +57,3 @@ impl PriceListBuilder {
     }
 }
 
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct PriceList {
-    map: HashMap<Product, Vec<PriceMapping>>,
-}
-
-impl PriceList {
-    pub fn new() -> Self {
-        Self {
-            map: HashMap::<Product, Vec<PriceMapping>>::new()
-        }
-    }
-
-    fn add_entry(&mut self, product: Product, price_mapping: PriceMapping) -> &mut Self {
-        self.map.entry(product)
-            .or_insert_with(Vec::<PriceMapping>::new)
-            .push(price_mapping);
-        self
-    }
-
-    #[inline]
-    pub fn len(&self) -> usize { self.map.len() }
-}
