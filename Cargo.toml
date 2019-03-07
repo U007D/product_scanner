@@ -33,6 +33,3 @@ debug-assertions = true
 lto = false
 opt-level = 0
 rpath = false
-
-[dev-dependencies]
-rspec = "1.0.0-beta.4"

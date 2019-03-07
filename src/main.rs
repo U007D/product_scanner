@@ -16,16 +16,15 @@ mod args;
 mod consts;
 mod error;
 mod product;
-mod pricing;
-#[cfg(test)]
-mod unit_tests;
+mod price_list;
+mod price_mapping;
 
 pub use {
     args::Args,
     consts::*,
     error::Error,
     product::Product,
-    pricing::PriceListBuilder,
+    price_list::PriceListBuilder,
 };
 
 use std::result::Result as StdResult;

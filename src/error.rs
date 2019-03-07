@@ -4,7 +4,7 @@ use crate::{
 };
 use derive_more::*;
 use std::num::NonZeroU32;
-use crate::pricing::PriceMapping;
+use crate::price_mapping::PriceMapping;
 
 #[derive(Clone, Debug, Display, From, PartialEq)]
 pub enum Error {
