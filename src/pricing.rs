@@ -9,7 +9,7 @@ use std::{
 };
 
 #[derive(Clone, Debug, PartialEq)]
-pub(crate) struct PriceMapping {
+pub struct PriceMapping {
     quantity: NonZeroU32,
     price: f64,
     unit_price: f64,
@@ -28,7 +28,7 @@ impl PriceListBuilder {
     }
 
     pub fn set_pricing(&mut self, product: Product, price: f64, quantity: NonZeroU32) -> Result<&mut Self> {
-        let unit_price = price / f64::from(quantity);
+        let unit_price = price / f64::from(u32::from(quantity));
         if !unit_price.is_finite() {
             Err(Error::UnitPriceNotRepresentable(price, quantity))?
         };
@@ -39,7 +39,7 @@ impl PriceListBuilder {
     }
 
     pub fn build(self) -> Result<PriceList> {
-        match self.len() {
+        match self.price_list.len() {
             0 => Err(Error::EmptyProductPricingTable),
             _ => Ok(self.price_list),
         }
@@ -64,10 +64,22 @@ impl PriceList {
             price,
             unit_price,
         };
-        self.table.get_mut(&product).and_then(|v| v.push(price_mapping))
-            .or_else(|| self.table.insert())
+        self.table
+            .get_mut_or_insert_default(&product)
+            .push(price_mapping);
+        self
     }
 
     #[inline]
     pub fn len(&self) -> usize { self.table.len() }
 }
+
+
+//let price_list = self.table.get_mut(&product);
+//price_list.map_or_else(|| self.table
+//.insert(product, vec![price_mapping])
+//.map_or_else(|| Ok(self), |value| Err(Error::KvpAlreadyPresent(product, value))),
+//|v| {
+//v.push(price_mapping);
+//Ok(self)
+//})

@@ -4,6 +4,7 @@ use rspec::{
     run,
 };
 use crate::pricing::PriceList;
+use std::num::NonZeroU32;
 
 #[derive(Clone, Debug)]
 struct Env {
@@ -32,9 +33,11 @@ fn rspec() {
         });
 
         ctx.when("a valid product and pricing entry is added", |ctx| {
-            ctx.before_each(|env| env.product_pricing = env.builder
-                                                           .add_product_pricing(Product::A, 1, 0.99)
-                                                           .build());
+            ctx.before_each(|env| env.product_pricing = Some(env.builder
+                                                                .set_pricing(Product::A, 0.99, NonZeroU32::new(1)
+                                                                                                          .unwrap())
+                                                                .unwrap()
+                                                                .build()));
 
             ctx.then("it should succeed", |env| env.product_pricing.unwrap().is_ok());
 //            ctx.then("it should contain only the expected product",
