@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 structopt = "*"
 derive_more = "*"
-ordered-float = "1.0.1"
+fraction = { version = "0.6.0", default-features = false, features = ["with-decimal"] }
 
 [profile.dev]
 codegen-units = 1

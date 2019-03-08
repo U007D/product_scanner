@@ -12,23 +12,30 @@ clippy::maybe_infinite_iter, clippy::option_unwrap_used, clippy::result_unwrap_u
 // ^^^ End of safety-critical lint section ^^^
 #![allow(clippy::match_bool,)]
 
-mod args;
-mod consts;
-mod error;
-mod product;
-mod price_list;
-mod price_mapping;
+use std::result::Result as StdResult;
+
+use structopt::StructOpt;
 
 pub use {
     args::Args,
     consts::*,
     error::Error,
-    product::Product,
+    ord_decimal::OrdDecimal as Decimal,
     price_list::PriceListBuilder,
+    product::Product,
+    terminal::Terminal,
 };
+use op::Op;
 
-use std::result::Result as StdResult;
-use structopt::StructOpt;
+mod args;
+mod consts;
+mod error;
+mod op;
+mod ord_decimal;
+mod product;
+mod price_list;
+mod price_mapping;
+mod terminal;
 
 pub type Result<T> = StdResult<T, Error>;
 

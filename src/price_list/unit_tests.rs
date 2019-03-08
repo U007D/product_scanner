@@ -1,8 +1,13 @@
-#![allow(clippy::option_unwrap_used, clippy::result_unwrap_used)]
-use super::*;
-use crate::price_mapping::PriceMapping;
-use ordered_float::NotNan;
+#![allow(clippy::option_unwrap_used, clippy::result_unwrap_used, clippy::indexing_slicing)]
+
 use std::num::NonZeroU32;
+
+use crate::{
+    Decimal,
+    price_mapping::PriceMapping
+};
+
+use super::*;
 
 #[test]
 fn build_empty_product_list_fails() {
@@ -17,16 +22,16 @@ fn build_empty_product_list_fails() {
 }
 
 #[test]
-fn build_after_adding_valid_product_pricing_yields_valid_price_list() {
+fn set_pricing_adding_valid_product_pricing_yields_valid_price_list() {
     // environment
-    let (prod, price, quantity) = (Product::A, NotNan::new(0.99).unwrap(), NonZeroU32::new(1).unwrap());
+    let (prod, price, quantity) = (Product::A, Decimal::from(0.99), NonZeroU32::new(1).unwrap());
     let mapping = PriceMapping::new(price, quantity).unwrap();
 
     // given a price list builder with a valid price list
     let mut builder = PriceListBuilder::new();
-    builder.set_pricing(prod, mapping.clone());
 
     // when adding a valid product and pricing entry before building
+    builder.set_pricing(prod, mapping.clone());
     let result = builder.build();
 
     // then it should yield a PriceList with exactly the expected number of price mappings
@@ -34,8 +39,5 @@ fn build_after_adding_valid_product_pricing_yields_valid_price_list() {
     assert_eq!(result.len(), 1);
 
     // and the price mapping should contain the correct values
-    #[allow(clippy::indexing_slicing, clippy::float_cmp)]
-    {
-        assert_eq!(result.prices[&prod].get(&mapping).is_some(), true);
-    }
+    assert_eq!(result.entries[&prod].get(&mapping).is_some(), true);
 }

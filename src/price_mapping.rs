@@ -1,20 +1,29 @@
-use crate::Result;
-use ordered_float::NotNan;
+use crate::{
+    Decimal,
+    Error,
+    Result,
+    Op,
+};
 use std::num::NonZeroU32;
+use fraction::CheckedDiv;
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct PriceMapping {
-    pub(crate) unit_price: NotNan<f64>,
+    pub(crate) unit_price: Decimal,
     pub(crate) quantity: NonZeroU32,
-    pub(crate) price: NotNan<f64>,
+    pub(crate) price: Decimal,
 }
 
 impl PriceMapping {
-    pub fn new(price: NotNan<f64>, quantity: NonZeroU32) -> Result<Self> {
+    pub fn new(price: Decimal, quantity: NonZeroU32) -> Result<Self> {
         Ok(Self {
             quantity,
             price,
-            unit_price: NotNan::new(price.into_inner() / f64::from(u32::from(quantity)))?,
+            unit_price: price.checked_div(&Decimal::from(u32::from(quantity)))
+                .ok_or_else(|| Error::OpYieldedUnrepresentableValue(Op::Div(price,
+                                                                            Decimal::from(u32::from(quantity)))
+                ))?,
         })
     }
 }
+

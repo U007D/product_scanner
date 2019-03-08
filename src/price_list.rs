@@ -6,30 +6,35 @@ use crate::{
     Product,
     Result,
 };
+
 #[cfg(test)]
 mod unit_tests;
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PriceList {
-    prices: HashMap<Product, BTreeSet<PriceMapping>>,
+    entries: HashMap<Product, BTreeSet<PriceMapping>>,
 }
 
 impl PriceList {
     pub fn new() -> Self {
         Self {
-            prices: HashMap::<Product, BTreeSet<PriceMapping>>::new()
+            entries: HashMap::<Product, BTreeSet<PriceMapping>>::new()
         }
     }
 
     fn add_entry(&mut self, product: Product, price_mapping: PriceMapping) -> &mut Self {
-        self.prices.entry(product)
+        self.entries.entry(product)
             .or_insert_with(BTreeSet::<PriceMapping>::new)
             .insert(price_mapping);
         self
     }
 
+    pub fn find_product_pricing(&self, product: &Product) -> Option<&BTreeSet<PriceMapping>> {
+        self.entries.get(&product)
+    }
+
     #[inline]
-    pub fn len(&self) -> usize { self.prices.len() }
+    pub fn len(&self) -> usize { self.entries.len() }
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]

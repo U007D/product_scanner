@@ -1,10 +1,16 @@
+use derive_more::{
+    Display,
+    From,
+};
+
 use crate::{
     consts::msg,
+    Decimal,
+    Op,
+    price_list::PriceList,
+    price_mapping::PriceMapping,
     Product
 };
-use derive_more::*;
-use crate::price_mapping::PriceMapping;
-use ordered_float::FloatIsNan;
 
 #[derive(Clone, Debug, Display, From, PartialEq)]
 pub enum Error {
@@ -14,6 +20,8 @@ pub enum Error {
     EmptyProductPricingTable,
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_INTERNAL_KVP_ALREADY_PRESENT", "_0", "_1")]
     KvpAlreadyPresent(Product, Vec<PriceMapping>),
-    #[display(fmt = "{}: {}", "msg::ERR_UNREPRESENTABLE_PRICE", "_0")]
-    UnrepresentablePrice(FloatIsNan),
+    #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
+    OpYieldedUnrepresentableValue(Op<Decimal>),
+    #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_PRODUCT_NOT_FOUND", "_0", "_1")]
+    ProductNotFound(Product, PriceList),
 }
