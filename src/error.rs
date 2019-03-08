@@ -1,3 +1,5 @@
+use std::num::NonZeroU32;
+
 use derive_more::{
     Display,
     From,
@@ -24,4 +26,6 @@ pub enum Error {
     OpYieldedUnrepresentableValue(Op<Decimal>),
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_PRODUCT_NOT_FOUND", "_0", "_1")]
     ProductNotFound(Product, PriceList),
+    #[display(fmt = "{}: {:?}, {:?}, {:?}", "msg::ERR_PRICING_NOT_FOUND_AT_QUANTITY", "_0", "_1", "_2")]
+    PricingNotFoundAtQuantity(Product, NonZeroU32, PriceList),
 }

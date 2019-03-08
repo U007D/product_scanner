@@ -29,7 +29,8 @@ impl PriceList {
         self
     }
 
-    pub fn find_product_pricing(&self, product: &Product) -> Option<&BTreeSet<PriceMapping>> {
+    // TODO: change return type be `impl Trait` for loose coupling
+    pub fn find_product_pricing(&self, product: Product) -> Option<&BTreeSet<PriceMapping>> {
         self.entries.get(&product)
     }
 
@@ -49,7 +50,7 @@ impl PriceListBuilder {
         }
     }
 
-    pub fn set_pricing(&mut self, product: Product, price_mapping: PriceMapping) -> &mut Self {
+    pub fn set_pricing(mut self, product: Product, price_mapping: PriceMapping) -> Self {
         self.price_list.add_entry(product, price_mapping);
         self
     }

@@ -25,19 +25,21 @@ fn build_empty_product_list_fails() {
 fn set_pricing_adding_valid_product_pricing_yields_valid_price_list() {
     // environment
     let (prod, price, quantity) = (Product::A, Decimal::from(0.99), NonZeroU32::new(1).unwrap());
-    let mapping = PriceMapping::new(price, quantity).unwrap();
+    let mapping = PriceMapping::new(price.clone(), quantity).unwrap();
+    let non_existent_mapping = PriceMapping::new(price, NonZeroU32::new(2).unwrap()).unwrap();
 
-    // given a price list builder with a valid price list
-    let mut builder = PriceListBuilder::new();
+    // given a price list builder
+    let builder = PriceListBuilder::new();
 
     // when adding a valid product and pricing entry before building
-    builder.set_pricing(prod, mapping.clone());
-    let result = builder.build();
+    let result = builder.set_pricing(prod, mapping.clone())
+                        .build();
 
     // then it should yield a PriceList with exactly the expected number of price mappings
     let result = result.unwrap();
     assert_eq!(result.len(), 1);
 
     // and the price mapping should contain the correct values
+    assert_eq!(result.entries[&prod].get(&non_existent_mapping).is_none(), true);
     assert_eq!(result.entries[&prod].get(&mapping).is_some(), true);
 }
