@@ -1,4 +1,4 @@
-use std::num::NonZeroU32;
+use std::num::NonZeroUsize;
 
 use derive_more::{
     Display,
@@ -23,9 +23,11 @@ pub enum Error {
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_INTERNAL_KVP_ALREADY_PRESENT", "_0", "_1")]
     KvpAlreadyPresent(Product, Vec<PriceMapping>),
     #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
-    OpYieldedUnrepresentableValue(Op<Decimal>),
+    OpYieldedUnrepresentableDecimalValue(Op<Decimal>),
+    #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
+    OpYieldedUnrepresentableIntegerValue(Op<usize>),
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_PRODUCT_NOT_FOUND", "_0", "_1")]
     ProductNotFound(Product, PriceList),
     #[display(fmt = "{}: {:?}, {:?}, {:?}", "msg::ERR_PRICING_NOT_FOUND_AT_QUANTITY", "_0", "_1", "_2")]
-    PricingNotFoundAtQuantity(Product, NonZeroU32, PriceList),
+    PricingNotFoundAtQuantity(Product, NonZeroUsize, PriceList),
 }

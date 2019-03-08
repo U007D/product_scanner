@@ -5,7 +5,7 @@ use crate::{
     PriceListBuilder,
     Product
 };
-use std::num::NonZeroU32;
+use std::num::NonZeroUsize;
 use super::*;
 
 #[test]
@@ -13,7 +13,7 @@ fn scan_one_valid_product_yields_correct_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroU32::new(1).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -31,7 +31,7 @@ fn scan_one_invalid_product_yields_error() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroU32::new(1).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -49,7 +49,7 @@ fn scan_invalid_quantity_of_valid_product_yields_error() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroU32::new(2).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroUsize::new(2).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -59,7 +59,7 @@ fn scan_invalid_quantity_of_valid_product_yields_error() {
     let result = terminal.scan(&[Product::A]);
 
     // then the expected `Error` should result
-    assert_eq!(result, Err(Error::PricingNotFoundAtQuantity(Product::A, NonZeroU32::new(1).unwrap(), price_list)));
+    assert_eq!(result, Err(Error::PricingNotFoundAtQuantity(Product::A, NonZeroUsize::new(1).unwrap(), price_list)));
 }
 
 #[test]
@@ -67,7 +67,7 @@ fn scan_three_valid_products_yields_correct_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroU32::new(1).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -85,8 +85,8 @@ fn scan_mix_of_valid_products_yields_correct_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroU32::new(1).unwrap()).unwrap())
-            .set_pricing(Product::B, PriceMapping::new(Decimal::from(0.5), NonZeroU32::new(1).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .set_pricing(Product::B, PriceMapping::new(Decimal::from(0.5), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -104,8 +104,8 @@ fn scan_mix_of_valid_and_invalid_product_yields_error() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroU32::new(1).unwrap()).unwrap())
-            .set_pricing(Product::B, PriceMapping::new(Decimal::from(0.5), NonZeroU32::new(1).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .set_pricing(Product::B, PriceMapping::new(Decimal::from(0.5), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -123,8 +123,8 @@ fn scan_multiple_valid_discounted_product_yields_correct_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroU32::new(1).unwrap()).unwrap())
-            .set_pricing(Product::A, PriceMapping::new(Decimal::from(7), NonZeroU32::new(2).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(7), NonZeroUsize::new(2).unwrap()).unwrap())
             .build()
             .unwrap();
 

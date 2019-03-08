@@ -1,10 +1,23 @@
 use std::{
     cmp::Ordering,
     convert::From,
-    ops::{Deref, DerefMut, Div},
+    ops::{
+        Add,
+        Deref,
+        DerefMut,
+        Div,
+        Mul,
+        Sub
+    }
 };
-use fraction::{Decimal, CheckedDiv, CheckedAdd};
-use std::ops::Add;
+
+use fraction::{
+    CheckedAdd,
+    CheckedDiv,
+    CheckedMul,
+    CheckedSub,
+    Decimal,
+};
 
 #[derive(Clone, Debug, Eq, PartialOrd, PartialEq)]
 pub struct OrdDecimal(Decimal);
@@ -53,6 +66,34 @@ impl Add for OrdDecimal {
 
 impl CheckedAdd for OrdDecimal {
     fn checked_add(&self, other: &Self) -> Option<Self> {
+        self.0.checked_add(&other.0).and_then(|v| Some(Self(v)))
+    }
+}
+
+impl Sub for OrdDecimal {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Self(self.0.sub(other.0))
+    }
+}
+
+impl CheckedSub for OrdDecimal {
+    fn checked_sub(&self, other: &Self) -> Option<Self> {
+        self.0.checked_sub(&other.0).and_then(|v| Some(Self(v)))
+    }
+}
+
+impl Mul for OrdDecimal {
+    type Output = Self;
+
+    fn mul(self, other: Self) -> Self::Output {
+        Self(self.0.mul(other.0))
+    }
+}
+
+impl CheckedMul for OrdDecimal {
+    fn checked_mul(&self, other: &Self) -> Option<Self> {
         self.0.checked_add(&other.0).and_then(|v| Some(Self(v)))
     }
 }

@@ -1,6 +1,6 @@
 #![allow(clippy::option_unwrap_used, clippy::result_unwrap_used, clippy::indexing_slicing)]
 
-use std::num::NonZeroU32;
+use std::num::NonZeroUsize;
 
 use crate::{
     Decimal,
@@ -24,9 +24,9 @@ fn build_empty_product_list_fails() {
 #[test]
 fn set_pricing_adding_valid_product_pricing_yields_valid_price_list() {
     // environment
-    let (prod, price, quantity) = (Product::A, Decimal::from(0.99), NonZeroU32::new(1).unwrap());
+    let (prod, price, quantity) = (Product::A, Decimal::from(0.99), NonZeroUsize::new(1).unwrap());
     let mapping = PriceMapping::new(price.clone(), quantity).unwrap();
-    let non_existent_mapping = PriceMapping::new(price, NonZeroU32::new(2).unwrap()).unwrap();
+    let non_existent_mapping = PriceMapping::new(price, NonZeroUsize::new(2).unwrap()).unwrap();
 
     // given a price list builder
     let builder = PriceListBuilder::new();
