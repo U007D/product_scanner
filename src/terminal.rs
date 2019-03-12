@@ -30,22 +30,43 @@ impl Terminal {
         }
     }
 
-    fn product_price_at_quantity(&self, prod_quant: (Product, usize)) -> Result<Decimal> {
+    #[allow(clippy::integer_arithmetic)]
+    fn calc_line_total(&self, prod_quant: (Product, usize)) -> Result<Decimal> {
         let (prod, quant) = prod_quant;
         self.price_list
             .find_product_pricing(prod)
             .ok_or_else(|| Error::ProductNotFound(prod, self.price_list.clone()))
-            .and_then(|prices| prices.iter()
-                .find(|price_map| price_map.quantity.get() <= quant)
-                .ok_or_else(||
-                    Error::PricingNotFoundAtQuantity(prod,
-                                                     NonZeroUsize::new(quant).expect(msg::ERR_INTERNAL_INFALLIBLE_VALID_CONSTANT),
-                                                     self.price_list.clone())))
-            .and_then(|price_map|
-                Ok(price_map.unit_price.clone() * Decimal::from(quant)))
+            .and_then(|prices|
+                  prices.iter()
+                      .scan(quant, |quant, price_map|{
+                          *quant %= price_map.quantity.get();
+                          Some((*quant / price_map.quantity.get(), price_map.price.clone(), price_map.quantity.get()))
+                      })
+                      .fold((Err(Error::PricingNotFoundAtQuantity(
+                                prod,
+                                NonZeroUsize::new(quant).expect(msg::ERR_INTERNAL_ZERO_USED_WITH_NON_ZERO_TYPE),
+                                self.price_list.clone())),
+                            Decimal::from(0)),
+                            |res, item| {
+                                match item.0 == 0 {
+                                    true => res,
+                                    false => {
+                                        let tot = res.1 + Decimal::from(item.0) * item.1;
+                                        (Ok(tot.clone()), tot)
+                                    }
+                                }
+                            })
+                      .0)
+//                prices.iter()
+//                      .find(|price_map| price_map.quantity.get() <= quant)
+//                      .ok_or_else(||
+//                          Error::PricingNotFoundAtQuantity(
+//                              prod,
+//                              NonZeroUsize::new(quant).expect(msg::ERR_INTERNAL_ZERO_USED_WITH_NON_ZERO_TYPE),
+//                              self.price_list.clone()))
+//                      .and_then(|price_map| Ok(price_map.unit_price.clone() * Decimal::from(quant))))
     }
 
-    #[allow(clippy::integer_arithmetic)]
     fn product_quantities<I>(&self, products: I) -> Result<impl Iterator<Item = (Product, usize)>>
                              where I: IntoIterator,
                                    I::Item: Borrow<Product>, {
@@ -76,7 +97,7 @@ impl Terminal {
                                                                 I::Item: Borrow<Product>, {
         self.product_quantities(products)?
             .try_fold(Decimal::from(0),
-                      |acc, prod_quant| self.product_price_at_quantity(prod_quant)
+                      |acc, prod_quant| self.calc_line_total(prod_quant)
                                            .and_then(|line_total|
                                                acc.checked_add(&line_total)
                                                   .ok_or_else(|| Error::OpYieldedInvalidDecimalValue(

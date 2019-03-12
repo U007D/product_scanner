@@ -3,4 +3,5 @@ pub enum Product {
     A,
     B,
     C,
+    D,
 }

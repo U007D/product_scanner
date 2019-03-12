@@ -137,3 +137,51 @@ fn scan_multiple_valid_discounted_product_yields_correct_total() {
     assert_eq!(result, Ok(Decimal::from(7)));
 }
 
+#[test]
+fn scan_test_case_1_yields_proper_total() {
+    // given a valid terminal
+    let price_list =
+        PriceListBuilder::new()
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(7), NonZeroUsize::new(4).unwrap()).unwrap())
+            .set_pricing(Product::B, PriceMapping::new(Decimal::from(12), NonZeroUsize::new(1).unwrap()).unwrap())
+            .set_pricing(Product::C, PriceMapping::new(Decimal::from(1.25), NonZeroUsize::new(1).unwrap()).unwrap())
+            .set_pricing(Product::C, PriceMapping::new(Decimal::from(6), NonZeroUsize::new(6).unwrap()).unwrap())
+            .set_pricing(Product::D, PriceMapping::new(Decimal::from(0.15), NonZeroUsize::new(1).unwrap()).unwrap())
+            .build()
+            .unwrap();
+
+    let terminal = Terminal::new(price_list);
+
+    // when a valid product is scanned
+    let result = terminal.scan(&[Product::A, Product::B, Product::C, Product::D,
+        Product::A, Product::B, Product::A, Product::A]);
+
+    // then the correct total should be returned
+    assert_eq!(result, Ok(Decimal::from(32.4)));
+}
+
+#[test]
+fn scan_test_case_2_yields_proper_total() {
+    // given a valid terminal
+    let price_list =
+        PriceListBuilder::new()
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .set_pricing(Product::A, PriceMapping::new(Decimal::from(7), NonZeroUsize::new(4).unwrap()).unwrap())
+            .set_pricing(Product::B, PriceMapping::new(Decimal::from(12), NonZeroUsize::new(1).unwrap()).unwrap())
+            .set_pricing(Product::C, PriceMapping::new(Decimal::from(1.25), NonZeroUsize::new(1).unwrap()).unwrap())
+            .set_pricing(Product::C, PriceMapping::new(Decimal::from(6), NonZeroUsize::new(6).unwrap()).unwrap())
+            .set_pricing(Product::D, PriceMapping::new(Decimal::from(0.15), NonZeroUsize::new(1).unwrap()).unwrap())
+            .build()
+            .unwrap();
+
+    let terminal = Terminal::new(price_list);
+
+    // when a valid product is scanned
+    let result = terminal.scan(&[Product::C, Product::C, Product::C, Product::C,
+                                 Product::C, Product::C, Product::C]);
+
+    // then the correct total should be returned
+    assert_eq!(result, Ok(Decimal::from(7.25)));
+}
+

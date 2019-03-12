@@ -4,4 +4,4 @@ pub const ERR_INTERNAL_KVP_ALREADY_PRESENT: &str = "Internal error: Unexpected k
 pub const ERR_UNREPRESENTABLE_VALUE: &str = "Error: Calculation yield unrepresentable result (result is too small or too large?)";
 pub const ERR_PRODUCT_NOT_FOUND: &str = "Error: Product was not found in the price list (product, price list)";
 pub const ERR_PRICING_NOT_FOUND_AT_QUANTITY: &str = "Error: No pricing information for `product` at `quantity` in `product price list`: ";
-pub const ERR_INTERNAL_INFALLIBLE_VALID_CONSTANT: &str = "Internal error: Invalid constant value supplied";
+pub const ERR_INTERNAL_ZERO_USED_WITH_NON_ZERO_TYPE: &str = "Internal error: Invalid constant value supplied--cannot use 0 with a `NonZero*` type";
