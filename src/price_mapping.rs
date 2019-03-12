@@ -18,8 +18,8 @@ impl PriceMapping {
     pub fn new(price: Decimal, quantity: NonZeroUsize) -> Result<Self> {
         Ok(Self {
             unit_price: price.checked_div(&Decimal::from(usize::from(quantity)))
-                             .ok_or_else(|| Error::OpYieldedUnrepresentableDecimalValue(Op::Div(price.clone(),
-                                                                                                Decimal::from(usize::from(quantity)))))?,
+                             .ok_or_else(|| Error::OpYieldedInvalidDecimalValue(Op::Div(price.clone(),
+                                                                                        Decimal::from(usize::from(quantity)))))?,
             quantity,
             price,
         })

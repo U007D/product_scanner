@@ -23,9 +23,9 @@ pub enum Error {
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_INTERNAL_KVP_ALREADY_PRESENT", "_0", "_1")]
     KvpAlreadyPresent(Product, Vec<PriceMapping>),
     #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
-    OpYieldedUnrepresentableDecimalValue(Op<Decimal>),
+    OpYieldedInvalidDecimalValue(Op<Decimal>),
     #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
-    OpYieldedUnrepresentableIntegerValue(Op<usize>),
+    IntegerOverflow(Op<usize>),
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_PRODUCT_NOT_FOUND", "_0", "_1")]
     ProductNotFound(Product, PriceList),
     #[display(fmt = "{}: {:?}, {:?}, {:?}", "msg::ERR_PRICING_NOT_FOUND_AT_QUANTITY", "_0", "_1", "_2")]
