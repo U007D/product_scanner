@@ -10,7 +10,7 @@ use crate::{
     Decimal,
     Op,
     price_list::PriceList,
-    price_mapping::PriceMapping,
+    price::Price,
     Product
 };
 
@@ -21,7 +21,7 @@ pub enum Error {
     #[display(fmt = "{}", "msg::ERR_EMPTY_PRODUCT_PRICING_TABLE")]
     EmptyProductPricingTable,
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_INTERNAL_KVP_ALREADY_PRESENT", "_0", "_1")]
-    KvpAlreadyPresent(Product, Vec<PriceMapping>),
+    KvpAlreadyPresent(Product, Vec<Price>),
     #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
     OpYieldedInvalidDecimalValue(Op<Decimal>),
     #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
@@ -30,4 +30,6 @@ pub enum Error {
     ProductNotFound(Product, PriceList),
     #[display(fmt = "{}: {:?}, {:?}, {:?}", "msg::ERR_PRICING_NOT_FOUND_AT_QUANTITY", "_0", "_1", "_2")]
     PricingNotFoundAtQuantity(Product, NonZeroUsize, PriceList),
+    #[display(fmt = "{}: {}", "msg::ERR_INVALID_PRODUCT_MNEMONIC", "_0")]
+    InvalidProductMnemonic(char),
 }

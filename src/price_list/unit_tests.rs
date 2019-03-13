@@ -4,7 +4,7 @@ use std::num::NonZeroUsize;
 
 use crate::{
     Decimal,
-    price_mapping::PriceMapping
+    price::Price
 };
 
 use super::*;
@@ -25,8 +25,8 @@ fn build_empty_product_list_fails() {
 fn set_pricing_adding_valid_product_pricing_yields_valid_price_list() {
     // environment
     let (prod, price, quantity) = (Product::A, Decimal::from(0.99), NonZeroUsize::new(1).unwrap());
-    let mapping = PriceMapping::new(price.clone(), quantity).unwrap();
-    let non_existent_mapping = PriceMapping::new(price, NonZeroUsize::new(2).unwrap()).unwrap();
+    let mapping = Price::new(price.clone(), quantity).unwrap();
+    let non_existent_mapping = Price::new(price, NonZeroUsize::new(2).unwrap()).unwrap();
 
     // given a price list builder
     let builder = PriceListBuilder::new();

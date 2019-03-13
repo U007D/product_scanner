@@ -28,13 +28,14 @@ pub use {
 use op::Op;
 
 mod args;
+mod as_ref_str_ext;
 mod consts;
 mod error;
 mod op;
 mod ord_decimal;
 mod product;
 mod price_list;
-mod price_mapping;
+mod price;
 mod terminal;
 
 pub type Result<T> = StdResult<T, Error>;

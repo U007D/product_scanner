@@ -8,13 +8,13 @@ use std::num::NonZeroUsize;
 use fraction::CheckedDiv;
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct PriceMapping {
+pub struct Price {
     pub(crate) unit_price: Decimal,
     pub(crate) quantity: NonZeroUsize,
     pub(crate) price: Decimal,
 }
 
-impl PriceMapping {
+impl Price {
     pub fn new(price: Decimal, quantity: NonZeroUsize) -> Result<Self> {
         Ok(Self {
             unit_price: price.checked_div(&Decimal::from(usize::from(quantity)))
