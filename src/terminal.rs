@@ -39,8 +39,11 @@ impl Terminal {
             .and_then(|prices|
                   prices.iter()
                       .scan(quant, |quant, price_map|{
+                          let res = Some((*quant / price_map.quantity.get(),
+                                          price_map.price.clone(),
+                                          price_map.quantity.get()));
                           *quant %= price_map.quantity.get();
-                          Some((*quant / price_map.quantity.get(), price_map.price.clone(), price_map.quantity.get()))
+                          res
                       })
                       .fold((Err(Error::PricingNotFoundAtQuantity(
                                 prod,
