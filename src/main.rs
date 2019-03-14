@@ -31,11 +31,12 @@ mod args;
 mod as_ref_str_ext;
 mod consts;
 mod error;
+mod non_zero_usize_ext;
 mod op;
 mod ord_decimal;
 mod product;
 mod price_list;
-mod price;
+mod quantity_price;
 mod terminal;
 
 pub type Result<T> = StdResult<T, Error>;

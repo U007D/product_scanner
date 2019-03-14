@@ -10,7 +10,7 @@ use crate::{
     Decimal,
     Op,
     price_list::PriceList,
-    price::Price,
+    quantity_price::QuantityPrice,
     Product
 };
 
@@ -21,9 +21,9 @@ pub enum Error {
     #[display(fmt = "{}", "msg::ERR_EMPTY_PRODUCT_PRICING_TABLE")]
     EmptyProductPricingTable,
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_INTERNAL_KVP_ALREADY_PRESENT", "_0", "_1")]
-    KvpAlreadyPresent(Product, Vec<Price>),
+    KvpAlreadyPresent(Product, Vec<QuantityPrice>),
     #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
-    OpYieldedInvalidDecimalValue(Op<Decimal>),
+    DecimalOverflow(Op<Decimal>),
     #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
     IntegerOverflow(Op<usize>),
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_PRODUCT_NOT_FOUND", "_0", "_1")]

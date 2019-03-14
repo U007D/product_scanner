@@ -2,7 +2,7 @@
 use crate::{
     as_ref_str_ext::AsRefStrExt,
     Decimal,
-    price::Price,
+    quantity_price::QuantityPrice,
     PriceListBuilder,
     Product
 };
@@ -14,7 +14,7 @@ fn scan_one_valid_product_yields_correct_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -32,7 +32,7 @@ fn scan_one_invalid_product_yields_error() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -50,7 +50,7 @@ fn scan_invalid_quantity_of_valid_product_yields_error() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(4.2), NonZeroUsize::new(2).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(4.2), NonZeroUsize::new(2).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -68,7 +68,7 @@ fn scan_three_valid_products_yields_correct_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -86,8 +86,8 @@ fn scan_mix_of_valid_products_yields_correct_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::B, Price::new(Decimal::from(0.5), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::B, QuantityPrice::new(Decimal::from(0.5), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -105,8 +105,8 @@ fn scan_mix_of_valid_and_invalid_product_yields_error() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::B, Price::new(Decimal::from(0.5), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::B, QuantityPrice::new(Decimal::from(0.5), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -124,8 +124,8 @@ fn scan_multiple_valid_discounted_product_yields_correct_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::A, Price::new(Decimal::from(7), NonZeroUsize::new(2).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(4.2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(7), NonZeroUsize::new(2).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -143,12 +143,12 @@ fn scan_test_case_1_yields_proper_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(2), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::A, Price::new(Decimal::from(7), NonZeroUsize::new(4).unwrap()).unwrap())
-            .set_pricing(Product::B, Price::new(Decimal::from(12), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::C, Price::new(Decimal::from(1.25), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::C, Price::new(Decimal::from(6), NonZeroUsize::new(6).unwrap()).unwrap())
-            .set_pricing(Product::D, Price::new(Decimal::from(0.15), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(7), NonZeroUsize::new(4).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::B, QuantityPrice::new(Decimal::from(12), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::C, QuantityPrice::new(Decimal::from(1.25), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::C, QuantityPrice::new(Decimal::from(6), NonZeroUsize::new(6).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::D, QuantityPrice::new(Decimal::from(0.15), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -166,12 +166,12 @@ fn scan_test_case_2_yields_proper_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(2), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::A, Price::new(Decimal::from(7), NonZeroUsize::new(4).unwrap()).unwrap())
-            .set_pricing(Product::B, Price::new(Decimal::from(12), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::C, Price::new(Decimal::from(1.25), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::C, Price::new(Decimal::from(6), NonZeroUsize::new(6).unwrap()).unwrap())
-            .set_pricing(Product::D, Price::new(Decimal::from(0.15), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(7), NonZeroUsize::new(4).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::B, QuantityPrice::new(Decimal::from(12), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::C, QuantityPrice::new(Decimal::from(1.25), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::C, QuantityPrice::new(Decimal::from(6), NonZeroUsize::new(6).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::D, QuantityPrice::new(Decimal::from(0.15), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
@@ -189,12 +189,12 @@ fn scan_test_case_3_yields_proper_total() {
     // given a valid terminal
     let price_list =
         PriceListBuilder::new()
-            .set_pricing(Product::A, Price::new(Decimal::from(2), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::A, Price::new(Decimal::from(7), NonZeroUsize::new(4).unwrap()).unwrap())
-            .set_pricing(Product::B, Price::new(Decimal::from(12), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::C, Price::new(Decimal::from(1.25), NonZeroUsize::new(1).unwrap()).unwrap())
-            .set_pricing(Product::C, Price::new(Decimal::from(6), NonZeroUsize::new(6).unwrap()).unwrap())
-            .set_pricing(Product::D, Price::new(Decimal::from(0.15), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(2), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::A, QuantityPrice::new(Decimal::from(7), NonZeroUsize::new(4).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::B, QuantityPrice::new(Decimal::from(12), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::C, QuantityPrice::new(Decimal::from(1.25), NonZeroUsize::new(1).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::C, QuantityPrice::new(Decimal::from(6), NonZeroUsize::new(6).unwrap()).unwrap())
+            .add_product_price_list_entry(Product::D, QuantityPrice::new(Decimal::from(0.15), NonZeroUsize::new(1).unwrap()).unwrap())
             .build()
             .unwrap();
 
