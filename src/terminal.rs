@@ -1,15 +1,16 @@
 use std::{
     borrow::Borrow,
     collections::HashMap,
-    num::NonZeroUsize,
 };
 
-use fraction::CheckedAdd;
+use fraction::{
+    CheckedAdd,
+    CheckedMul,
+};
 
 use crate::{
     Decimal,
     Error,
-    msg,
     op::Op,
     price_list::PriceList,
     Product,
@@ -30,40 +31,49 @@ impl Terminal {
         }
     }
 
-    #[allow(clippy::integer_arithmetic)]
     fn calc_line_total(&self, prod: Product, quant: usize) -> Result<Decimal> {
         self.price_list
             .find_product_pricing(prod)
             .ok_or_else(|| Error::ProductNotFound(prod, self.price_list.clone()))
-            .and_then(|prices|
-                prices.iter()
-                      .scan(quant, |quant, price_map| {
-                          let res = Some((*quant / price_map.quantity.get(),
-                                          price_map.price.clone(),
-                                          price_map.quantity.get()));
-                          *quant %= price_map.quantity.get();
-                          res
-                      })
-                      .fold((Err(Error::PricingNotFoundAtQuantity(
-                          prod,
-                          NonZeroUsize::new(quant).expect(msg::ERR_INTERNAL_ZERO_USED_WITH_NON_ZERO_TYPE),
-                          self.price_list.clone())),
-                             Decimal::from(0)),
-                            |res, item| {
-                                match item.0 == 0 {
-                                    true => res,
-                                    false => {
-                                        let tot = res.1 + Decimal::from(item.0) * item.1;
-                                        (Ok(tot.clone()), tot)
-                                    }
-                                }
-                            })
-                      .0)
-    }
+            .and_then(|prod_price_list|
+                prod_price_list.iter()
+                               .scan(quant, |remaining_quant, price_map| {
+                                   let price_map_quant = price_map.quantity.get();
+                                   match dbg!(&remaining_quant).checked_div(dbg!(price_map_quant)) {
+                                       Some(q) if q > 0 => {
+                                           Some(remaining_quant.checked_rem(price_map_quant)
+                                                               .ok_or_else(||
+                                                                   Error::IntegerOverflow(Op::Rem(*remaining_quant,
+                                                                                                  price_map_quant)))
+                                                               .and_then(|rq| {
+                                                                   *remaining_quant = rq;
+                                                                   Decimal::from(q)
+                                                                       .checked_mul(&price_map.price.clone())
+                                                                       .ok_or_else(||
+                                                                           Error::OpYieldedInvalidDecimalValue(
+                                                                               Op::Mul(Decimal::from(q),
+                                                                                       price_map.price.clone())))
+                                                               }))
+                                       },
+                                       Some(_) => Some(Ok(Decimal::from(0))),
+                                       None => Some(Err(Error::IntegerOverflow(Op::Div(*remaining_quant,
+                                                                                       price_map_quant)))),
+                                   }
+                               })
+                               .try_fold(Decimal::from(0),
+                                         |acc, line_price| dbg!(line_price).and_then(|price|
+                                             acc.checked_add(&price.clone())
+                                                .ok_or_else(|| Error::OpYieldedInvalidDecimalValue(
+                                                                           Op::Add(acc, price))))))
+//        Err(Error::PricingNotFoundAtQuantity(
+//            prod,
+//            NonZeroUsize::new(quant).expect(msg::ERR_INTERNAL_ZERO_USED_WITH_NON_ZERO_TYPE),
+//            self.price_list.clone()))
+}
 
     fn consolidate_product_list<I>(&self, product_list: I) -> Result<impl Iterator<Item = (Product, usize)>>
-                                   where I: IntoIterator,
-                                   I::Item: Borrow<Product>, {
+                                                              where I: IntoIterator,
+                                                                    I::Item: Borrow<Product>, {
         product_list.into_iter()
                     .try_fold(HashMap::<Product, usize>::new(),
                               |mut prod_quants, prod| {
@@ -87,7 +97,7 @@ impl Terminal {
     }
 
     pub fn scan<I>(&self, product_list: I) -> Result<Decimal> where I: IntoIterator,
-                                                                I::Item: Borrow<Product>, {
+                                                                    I::Item: Borrow<Product>, {
         self.consolidate_product_list(product_list)?
             .try_fold(Decimal::from(0),
                       |acc, (prod, quant)| self.calc_line_total(prod, quant)

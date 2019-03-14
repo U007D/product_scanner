@@ -24,7 +24,7 @@ fn scan_one_valid_product_yields_correct_total() {
     let result = terminal.scan(&"A".as_product_list().unwrap());
 
     // then the correct total should be returned
-    assert_eq!(result, Ok(Decimal::from(4.2)));
+    assert_eq!(Ok(Decimal::from(4.2)), result);
 }
 
 #[test]
@@ -42,7 +42,7 @@ fn scan_one_invalid_product_yields_error() {
     let result = terminal.scan(&"B".as_product_list().unwrap());
 
     // then the expected `Error` should result
-    assert_eq!(result, Err(Error::ProductNotFound(Product::B, price_list)));
+    assert_eq!(Err(Error::ProductNotFound(Product::B, price_list)), result);
 }
 
 #[test]
@@ -60,7 +60,7 @@ fn scan_invalid_quantity_of_valid_product_yields_error() {
     let result = terminal.scan(&"A".as_product_list().unwrap());
 
     // then the expected `Error` should result
-    assert_eq!(result, Err(Error::PricingNotFoundAtQuantity(Product::A, NonZeroUsize::new(1).unwrap(), price_list)));
+    assert_eq!(Err(Error::PricingNotFoundAtQuantity(Product::A, NonZeroUsize::new(1).unwrap(), price_list)), result);
 }
 
 #[test]
@@ -78,7 +78,7 @@ fn scan_three_valid_products_yields_correct_total() {
     let result = terminal.scan(&"AAA".as_product_list().unwrap());
 
     // then the correct total should be returned
-    assert_eq!(result, Ok(Decimal::from(12.6)));
+    assert_eq!(Ok(Decimal::from(12.6)), result);
 }
 
 #[test]
@@ -97,7 +97,7 @@ fn scan_mix_of_valid_products_yields_correct_total() {
     let result = terminal.scan(&"AABA".as_product_list().unwrap());
 
     // then the correct total should be returned
-    assert_eq!(result, Ok(Decimal::from(13.1)));
+    assert_eq!(Ok(Decimal::from(13.1)), result);
 }
 
 #[test]
@@ -116,7 +116,7 @@ fn scan_mix_of_valid_and_invalid_product_yields_error() {
     let result = terminal.scan(&"AABCA".as_product_list().unwrap());
 
     // then the expected `Error` should result
-    assert_eq!(result, Err(Error::ProductNotFound(Product::C, price_list)));
+    assert_eq!(Err(Error::ProductNotFound(Product::C, price_list)), result);
 }
 
 #[test]
@@ -135,7 +135,7 @@ fn scan_multiple_valid_discounted_product_yields_correct_total() {
     let result = terminal.scan(&"AA".as_product_list().unwrap());
 
     // then the correct total should be returned
-    assert_eq!(result, Ok(Decimal::from(7)));
+    assert_eq!(Ok(Decimal::from(7)), result);
 }
 
 #[test]
@@ -158,7 +158,7 @@ fn scan_test_case_1_yields_proper_total() {
     let result = terminal.scan(&"ABCDABAA".as_product_list().unwrap());
 
     // then the correct total should be returned
-    assert_eq!(result, Ok(Decimal::from(32.4)));
+    assert_eq!(Ok(Decimal::from(32.4)), result);
 }
 
 #[test]
@@ -181,7 +181,7 @@ fn scan_test_case_2_yields_proper_total() {
     let result = terminal.scan(&"CCCCCCC".as_product_list().unwrap());
 
     // then the correct total should be returned
-    assert_eq!(result, Ok(Decimal::from(7.25)));
+    assert_eq!(Ok(Decimal::from(7.25)), result);
 }
 
 #[test]
@@ -204,5 +204,5 @@ fn scan_test_case_3_yields_proper_total() {
     let result = terminal.scan(&"ABCD".as_product_list().unwrap());
 
     // then the correct total should be returned
-    assert_eq!(result, Ok(Decimal::from(15.40)));
+    assert_eq!(Ok(Decimal::from(15.40)), result);
 }

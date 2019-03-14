@@ -18,7 +18,7 @@ fn build_empty_product_list_fails() {
     let result = builder.build();
 
     // then it should fail when invoked, returning the expected error
-    assert_eq!(result, Err(Error::EmptyProductPricingTable));
+    assert_eq!(Err(Error::EmptyProductPricingTable), result);
 }
 
 #[test]
@@ -37,9 +37,9 @@ fn set_pricing_adding_valid_product_pricing_yields_valid_price_list() {
 
     // then it should yield a PriceList with exactly the expected number of price mappings
     let result = result.unwrap();
-    assert_eq!(result.len(), 1);
+    assert_eq!(1, result.len());
 
     // and the price mapping should contain the correct values
-    assert_eq!(result.entries[&prod].get(&non_existent_mapping).is_none(), true);
-    assert_eq!(result.entries[&prod].get(&mapping).is_some(), true);
+    assert_eq!(true, result.entries[&prod].get(&non_existent_mapping).is_none());
+    assert_eq!(true, result.entries[&prod].get(&mapping).is_some());
 }

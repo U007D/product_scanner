@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod unit_tests;
+
 use std::{
     cmp::Ordering,
     convert::From,
@@ -11,13 +14,7 @@ use std::{
     }
 };
 
-use fraction::{
-    CheckedAdd,
-    CheckedDiv,
-    CheckedMul,
-    CheckedSub,
-    Decimal,
-};
+use fraction::{CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, Decimal, Bounded};
 
 #[derive(Clone, Debug, Eq, PartialOrd, PartialEq)]
 pub struct OrdDecimal(Decimal);
@@ -64,6 +61,16 @@ impl Add for OrdDecimal {
     }
 }
 
+impl Bounded for OrdDecimal {
+    fn min_value() -> Self {
+        OrdDecimal(Decimal::min_value())
+    }
+
+    fn max_value() -> Self {
+        OrdDecimal(Decimal::max_value())
+    }
+}
+
 impl CheckedAdd for OrdDecimal {
     fn checked_add(&self, other: &Self) -> Option<Self> {
         self.0.checked_add(&other.0).and_then(|v| Some(Self(v)))
@@ -94,7 +101,7 @@ impl Mul for OrdDecimal {
 
 impl CheckedMul for OrdDecimal {
     fn checked_mul(&self, other: &Self) -> Option<Self> {
-        self.0.checked_add(&other.0).and_then(|v| Some(Self(v)))
+        self.0.checked_mul(&other.0).and_then(|v| Some(Self(v)))
     }
 }
 

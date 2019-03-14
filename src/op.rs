@@ -6,4 +6,5 @@ pub enum Op<T: Debug> {
     Sub(T, T),
     Mul(T, T),
     Div(T, T),
+    Rem(T, T),
 }

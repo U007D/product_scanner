@@ -29,7 +29,7 @@ impl PriceList {
         self
     }
 
-    // TODO: change return type be `impl Trait` for loose coupling
+    // TODO: change return type to `impl Trait` (loose coupling)
     pub fn find_product_pricing(&self, product: Product) -> Option<&BTreeSet<Price>> {
         self.entries.get(&product)
     }

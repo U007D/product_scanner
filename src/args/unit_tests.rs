@@ -15,5 +15,5 @@ fn args_can_be_tested_by_constructing_from_an_iterator_of_values() {
     let result = sut(&args);
 
     // then it should return an error
-    assert_eq!(result.is_err(), true);
+    assert_eq!(true, result.is_err());
 }

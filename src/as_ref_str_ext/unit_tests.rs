@@ -9,8 +9,8 @@ fn as_product_list_with_valid_chars_yields_product_list() {
     let result = prods.as_product_list();
 
     // then it should succeed with the expected result
-    assert_eq!(result, Ok(vec![Product::A, Product::B, Product::C, Product::D,
-                               Product::D, Product::C, Product::B, Product::A]));
+    assert_eq!(Ok(vec![Product::A, Product::B, Product::C, Product::D,
+                       Product::D, Product::C, Product::B, Product::A]), result);
 }
 
 #[test]
@@ -22,5 +22,5 @@ fn as_product_list_with_invalid_char_yields_error() {
     let result = prods.as_product_list();
 
     // then the expected error should be returned
-    assert_eq!(result, Err(Error::InvalidProductMnemonic('E')));
+    assert_eq!(Err(Error::InvalidProductMnemonic('E')), result);
 }
