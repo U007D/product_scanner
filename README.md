@@ -47,9 +47,8 @@ To that end, there are no `mut`able bindings in this implementation.  To achieve
 a functional programming paradigm.  Further, I chose the Builder Pattern to isolate the construction of the `PriceList` 
 to one type, namely, `PriceListBuilder`.  Once built, the `PriceList` has no way of being mutated.
 
-#### Don't use nulls or throw Exceptions
+#### Don't use nulls
 Fortunately, in Safe Rust, there are no nulls.
-
 
 #### Don't throw Exceptions
 Translated to Rust, this was taken to mean don't panic.
@@ -75,3 +74,10 @@ relevant `std` types, such as `str` and `String`, for example.
 #### Bonus points: demonstrate use of a higher order function
 The `Terminal` struct makes heavy use of closures, which when passed as parameters to functions (the functional 
 combinators in this specific case) is use of higher order functions.
+
+#### Correctness and IEEE754 floating point values
+Floating point math is notoriously difficult to get right.  Comparing values is frought with pitfalls, even 
+`assert_eq!(0.1 + 0.2, 0.3)` will assert `false` (this is not Rust's fault, it's the IEEE754 standard for floating point
+numbers).  For a "financial application" to ensure correctness, all non-integer calculations performed by this program
+use `Decimal` representation as opposed to floating point values to avoid these issues.  Please see the included 
+documentation on `OrdDecimal` for more information (`cargo doc --open`).  
