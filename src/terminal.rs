@@ -23,11 +23,13 @@ use crate::{
 #[cfg(test)]
 mod unit_tests;
 
+/// `Terminal` represents the type which performs the computations yielding a total price for all goods to be purchased.
 pub struct Terminal {
     price_list: PriceList,
 }
 
 impl Terminal {
+    /// Constructor.
     pub fn new(price_list: PriceList) -> Self {
         Self {
             price_list,
@@ -35,18 +37,17 @@ impl Terminal {
     }
 
     fn calc_line_total(&self, prod: Product, nz_quant: NonZeroUsize) -> Result<Decimal> {
-        let mut quant = dbg!(nz_quant.get());
         self.price_list
             .product_price_list(prod)
             .ok_or_else(|| Error::ProductNotFound(prod, self.price_list.clone()))
             .and_then(|prod_price_list| {
                   prod_price_list.iter()
-                                 .filter_map(|quant_price| {
+                                 .scan(nz_quant.get(), |quant, quant_price| {
                                      let price_list_quant = quant_price.quantity.get();
-                                     match price_list_quant <= quant {
+                                     match price_list_quant <= *quant {
                                          true => {
-                                             Some(quant.checked_div(price_list_quant)
-                                                       .ok_or_else(|| Error::IntegerOverflow(Op::Div(quant,
+                                             Some(Some(quant.checked_div(price_list_quant)
+                                                       .ok_or_else(|| Error::IntegerOverflow(Op::Div(*quant,
                                                                                                      price_list_quant)))
                                                        .and_then(|line_quant|
                                                            Decimal::from(line_quant)
@@ -55,17 +56,18 @@ impl Terminal {
                                                                        Op::Mul(Decimal::from(line_quant),
                                                                                quant_price.price.clone())))
                                                                    .and_then(|line_tot|
-                                                                       quant.checked_rem(dbg!(price_list_quant))
+                                                                       quant.checked_rem(price_list_quant)
                                                                             .ok_or_else(|| Error::IntegerOverflow(
-                                                                                Op::Rem(quant, price_list_quant)))
+                                                                                Op::Rem(*quant, price_list_quant)))
                                                                             .and_then(|quant_rem| {
-                                                                                quant = quant_rem;
+                                                                                *quant = quant_rem;
                                                                                 Ok(line_tot)
-                                                                            }))))
+                                                                            })))))
                                          },
-                                         false => None,
+                                         false => Some(None),
                                      }
                                  })
+                                 .filter_map(|el| el)
                                  .fold(
                                      Option::<Result<Decimal>>::None,
                                      |tot, line_tot|
@@ -85,9 +87,9 @@ impl Terminal {
             })
 }
 
-    fn consolidate_product_list<I>(&self, prod_list: I) -> Result<impl Iterator<Item = (Product, NonZeroUsize)>>
-                                                              where I: IntoIterator,
-                                                                    I::Item: Borrow<Product>, {
+    fn collate_product_list<I>(&self, prod_list: I) -> Result<impl Iterator<Item = (Product, NonZeroUsize)>>
+                                                       where I: IntoIterator,
+                                                             I::Item: Borrow<Product>, {
         prod_list.into_iter()
                  .try_fold(HashMap::<Product, NonZeroUsize>::new(),
                            |mut prod_quants, prod| {
@@ -95,7 +97,7 @@ impl Terminal {
                                match prod_quants.get_mut(key) {
                                    Some(val) => {
                                        val.checked_add(1)
-                                          .ok_or_else(|| Error::IntegerOverflow(Op::Add(val.get(), 1)))
+                                          .ok_or_else(|| Error::IntegerOverflow(Op::Add(usize::from(*val), 1)))
                                           .and_then(|v| {
                                               *val = v;
                                               Ok(())
@@ -112,9 +114,11 @@ impl Terminal {
                  .and_then(|q_prods| Ok(q_prods.into_iter()))
     }
 
+    /// Given a list of products, collates them so that any applicable quantity pricing can be applied, providing the
+    /// lowest possible total bill to the customer.
     pub fn scan<I>(&self, product_list: I) -> Result<Decimal> where I: IntoIterator,
                                                                     I::Item: Borrow<Product>, {
-        self.consolidate_product_list(product_list)?
+        self.collate_product_list(product_list)?
             .try_fold(Decimal::from(0),
                       |acc, (prod, quant)| self.calc_line_total(prod, quant)
                                                .and_then(|line_tot|

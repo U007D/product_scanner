@@ -1,5 +1,5 @@
 [package]
-name = "senior_software_consultant"
+name = "product_scanner"
 version = "0.1.0"
 authors = ["Brad Gibson <b2b@humanenginuity.com>"]
 edition = "2018"

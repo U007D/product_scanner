@@ -3,13 +3,13 @@ use structopt::StructOpt;
 #[cfg(test)]
 mod unit_tests;
 
-/// Args is a structure representing the user's supplied command-line arguments supplied to the program as an
-/// initialized data structure.  Types within the data structure are defined to be as restrictive as possible to
-/// ensure only valid inputs are accepted.  Where types accurately reflect the application's constraints, conditional
-/// logic, validation code & tests can all be safely eliminated, ∵ the invalid states of concern are not representable.
+/// Product scanner is a robust implementation of a exercise detailed in this crates notes (use `cargo doc --open` to
+/// see them).  Currently the interface is exercised through unit tests (use `cargo test` to invoke them), but this
+/// could be expanded to include the command line and/or API/RPC calls.  Please see the `README.md` document in the root
+/// of this crate for more information.
 #[derive(Debug, StructOpt)]
 #[structopt(rename_all = "kebab-case")]
 pub struct Args {
-    /// Sample argument (can be of any type).  Use `Option<some_type>` for optional arguments
-    pub product_codes: usize,
+    /// A command-line interface to construct a price and purchase list is not currently implemented
+    pub tbd: String,
 }
