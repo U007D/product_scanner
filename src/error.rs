@@ -7,8 +7,6 @@ use derive_more::{
 
 use crate::{
     consts::msg,
-    Decimal,
-    Op,
     price_list::PriceList,
     quantity_price::QuantityPrice,
     Product
@@ -29,14 +27,6 @@ pub enum Error {
     /// while exclusively locking access, the key being added miraculously becomes 'already present'.
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_INTERNAL_KVP_ALREADY_PRESENT", "_0", "_1")]
     KvpAlreadyPresent(Product, Vec<QuantityPrice>),
-
-    /// Occurs when a value exceeds [Decimal]`s ability to represent it.
-    #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
-    DecimalOverflow(Op<Decimal>),
-
-    /// Occurs when a value exceeds [usize]`s ability to represent it.
-    #[display(fmt = "{}: {:?}", "msg::ERR_UNREPRESENTABLE_VALUE", "_0")]
-    IntegerOverflow(Op<usize>),
 
     /// Occurs when a valid [Product] is not present in the `PriceList`
     #[display(fmt = "{}: {:?}, {:?}", "msg::ERR_PRODUCT_NOT_FOUND", "_0", "_1")]

@@ -1,5 +1,4 @@
 use super::*;
-use fraction::Bounded;
 
 #[test]
 fn cmp_nan_eq_nan() {
@@ -42,28 +41,8 @@ fn add() {
 }
 
 #[test]
-fn checked_add_nominal() {
-    assert_eq!(Some(OrdDecimal::from(42)), OrdDecimal::from(41).checked_add(&OrdDecimal::from(1)));
-}
-
-#[test]
-fn checked_add_overflow() {
-    assert_eq!(None, OrdDecimal::max_value().checked_add(&OrdDecimal::from(1)));
-}
-
-#[test]
 fn sub() {
     assert_eq!(OrdDecimal::from(42), OrdDecimal::from(43) - OrdDecimal::from(1));
-}
-
-#[test]
-fn checked_sub_nominal() {
-    assert_eq!(Some(OrdDecimal::from(42)), OrdDecimal::from(43).checked_sub(&OrdDecimal::from(1)));
-}
-
-#[test]
-fn checked_sub_overflow() {
-    assert_eq!(None, OrdDecimal::min_value().checked_sub(&OrdDecimal::from(1)));
 }
 
 #[test]
@@ -72,27 +51,7 @@ fn mul() {
 }
 
 #[test]
-fn checked_mul_nominal() {
-    assert_eq!(Some(OrdDecimal::from(42)), OrdDecimal::from(21).checked_mul(&OrdDecimal::from(2)));
-}
-
-#[test]
-fn checked_mul_overflow() {
-    assert_eq!(None, OrdDecimal::max_value().checked_mul(&OrdDecimal::from(1.1)));
-}
-
-#[test]
 fn div() {
     assert_eq!(OrdDecimal::from(42), OrdDecimal::from(84) / OrdDecimal::from(2));
-}
-
-#[test]
-fn checked_div_nominal() {
-    assert_eq!(Some(OrdDecimal::from(42)), OrdDecimal::from(84).checked_div(&OrdDecimal::from(2)));
-}
-
-#[test]
-fn checked_div_overflow() {
-    assert_eq!(None, OrdDecimal::min_value().checked_div(&OrdDecimal::from(0.1)));
 }
 

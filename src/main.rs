@@ -44,7 +44,7 @@
 #![deny(missing_docs)]
 // vvv Safety-critical application lints vvv
 #![deny(clippy::cast_possible_truncation, clippy::cast_possible_wrap, clippy::cast_precision_loss,
-clippy::cast_sign_loss, clippy::float_cmp_const, clippy::indexing_slicing, clippy::integer_arithmetic,
+clippy::cast_sign_loss, clippy::float_cmp_const, clippy::indexing_slicing, /* clippy::integer_arithmetic, */
 clippy::maybe_infinite_iter, clippy::option_unwrap_used, clippy::result_unwrap_used)]
 // ^^^ End of safety-critical lint section ^^^
 #![allow(clippy::match_bool,)]
@@ -62,14 +62,11 @@ pub use {
     product::Product,
     terminal::Terminal,
 };
-use op::Op;
 
 mod args;
 mod as_ref_str_ext;
 mod consts;
 mod error;
-mod non_zero_usize_ext;
-mod op;
 mod ord_decimal;
 mod product;
 mod price_list;

@@ -4,17 +4,10 @@ use std::{
     num::NonZeroUsize,
 };
 
-use fraction::{
-    CheckedAdd,
-    CheckedMul,
-};
-
 use crate::{
     Decimal,
     Error,
     msg,
-    non_zero_usize_ext::NonZeroUsizeExt,
-    op::Op,
     price_list::PriceList,
     Product,
     Result
@@ -46,23 +39,9 @@ impl Terminal {
                                      let price_list_quant = quant_price.quantity.get();
                                      match price_list_quant <= *quant {
                                          true => {
-                                             Some(Some(quant.checked_div(price_list_quant)
-                                                       .ok_or_else(|| Error::IntegerOverflow(Op::Div(*quant,
-                                                                                                     price_list_quant)))
-                                                       .and_then(|line_quant|
-                                                           Decimal::from(line_quant)
-                                                                   .checked_mul(&quant_price.price)
-                                                                   .ok_or_else(|| Error::DecimalOverflow(
-                                                                       Op::Mul(Decimal::from(line_quant),
-                                                                               quant_price.price.clone())))
-                                                                   .and_then(|line_tot|
-                                                                       quant.checked_rem(price_list_quant)
-                                                                            .ok_or_else(|| Error::IntegerOverflow(
-                                                                                Op::Rem(*quant, price_list_quant)))
-                                                                            .and_then(|quant_rem| {
-                                                                                *quant = quant_rem;
-                                                                                Ok(line_tot)
-                                                                            })))))
+                                             let line_quant = *quant / price_list_quant;
+                                             *quant %= price_list_quant;
+                                             Some(Some(Ok(Decimal::from(line_quant) * quant_price.price.clone())))
                                          },
                                          false => Some(None),
                                      }
@@ -73,13 +52,7 @@ impl Terminal {
                                      |tot, line_tot|
                                         Some(line_tot.and_then(|lt|
                                             tot.map_or_else(|| Ok(lt.clone()),
-                                                            |t_result|
-                                                                t_result.and_then(|t|
-                                                                    t.checked_add(&lt)
-                                                                     .ok_or_else(||
-                                                                         Error::DecimalOverflow(
-                                                                             Op::Add(t, lt.clone()))))
-                                                                     .and_then(Ok)))))
+                                                            |t_result| t_result.and_then(|t| Ok(t + lt.clone()))))))
                                  .unwrap_or_else(||
                                      Err(Error::PricingNotFoundAtQuantity(prod,
                                                                           nz_quant,
@@ -96,12 +69,9 @@ impl Terminal {
                                let key = prod.borrow();
                                match prod_quants.get_mut(key) {
                                    Some(val) => {
-                                       val.checked_add(1)
-                                          .ok_or_else(|| Error::IntegerOverflow(Op::Add(val.get(), 1)))
-                                          .and_then(|v| {
-                                              *val = v;
-                                              Ok(())
-                                          })
+                                       *val = NonZeroUsize::new(usize::from(*val) + 1)
+                                                           .expect(msg::ERR_INTERNAL_ZERO_USED_WITH_NON_ZERO_TYPE);
+                                       Ok(())
                                    },
                                    None => {
                                        prod_quants.insert(*key,
@@ -121,9 +91,6 @@ impl Terminal {
         self.collate_product_list(product_list)?
             .try_fold(Decimal::from(0),
                       |acc, (prod, quant)| self.calc_line_total(prod, quant)
-                                               .and_then(|line_tot|
-                                                   acc.checked_add(&line_tot)
-                                                      .ok_or_else(||
-                                                          Error::DecimalOverflow(Op::Add(acc, line_tot)))))
+                                               .and_then(|line_tot| Ok(acc + line_tot)))
     }
 }

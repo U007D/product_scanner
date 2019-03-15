@@ -14,7 +14,7 @@ use std::{
     }
 };
 
-use fraction::{CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, Decimal, Bounded};
+use fraction::{Decimal, Bounded};
 
 /// Floating point values exhibit
 /// [problematic behavior](https://dl.acm.org/citation.cfm?id=103163) such as the fact that two floats cannot be
@@ -80,23 +80,11 @@ impl Bounded for OrdDecimal {
     }
 }
 
-impl CheckedAdd for OrdDecimal {
-    fn checked_add(&self, other: &Self) -> Option<Self> {
-        self.0.checked_add(&other.0).and_then(|v| Some(Self(v)))
-    }
-}
-
 impl Sub for OrdDecimal {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self::Output {
         Self(self.0.sub(other.0))
-    }
-}
-
-impl CheckedSub for OrdDecimal {
-    fn checked_sub(&self, other: &Self) -> Option<Self> {
-        self.0.checked_sub(&other.0).and_then(|v| Some(Self(v)))
     }
 }
 
@@ -108,22 +96,10 @@ impl Mul for OrdDecimal {
     }
 }
 
-impl CheckedMul for OrdDecimal {
-    fn checked_mul(&self, other: &Self) -> Option<Self> {
-        self.0.checked_mul(&other.0).and_then(|v| Some(Self(v)))
-    }
-}
-
 impl Div for OrdDecimal {
     type Output = Self;
 
     fn div(self, other: Self) -> Self::Output {
         Self(self.0.div(other.0))
-    }
-}
-
-impl CheckedDiv for OrdDecimal {
-    fn checked_div(&self, other: &Self) -> Option<Self> {
-        self.0.checked_div(&other.0).and_then(|v| Some(Self(v)))
     }
 }
