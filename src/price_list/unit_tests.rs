@@ -32,7 +32,7 @@ fn set_pricing_adding_valid_product_pricing_yields_valid_price_list() {
     let builder = PriceListBuilder::new();
 
     // when adding a valid product and pricing entry before building
-    let result = builder.add_product_price_list_entry(prod, mapping.clone())
+    let result = builder.add_price_list_entry(prod, mapping.clone())
                         .build();
 
     // then it should yield a PriceList with exactly the expected number of price mappings

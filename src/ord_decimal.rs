@@ -16,10 +16,19 @@ use std::{
 
 use fraction::{CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, Decimal, Bounded};
 
+/// Floating point values exhibit
+/// [problematic behavior](https://dl.acm.org/citation.cfm?id=103163) such as the fact that two floats cannot be
+/// reliably compared for equality, rounding error (e.g. `assert_eq!(0.1_f64 + 0.2_f64, 0.3_f64)` will assert false).
+/// The `fraction` crate's `Decimal` type solves these issues.  Like standards-compliant floating point values,
+/// `Decimal` values are not hashable.  `OrdDecimal` is a NewType over `Decimal` with:
+///     * total ordering implemented (ie. can be safely hashed)
+///     * checked arithmetic implemented
+/// `OrdDecimal` is `type` aliased to `Decimal` in `main.rs` to serve as a drop-in replacement of the latter.
 #[derive(Clone, Debug, Eq, PartialOrd, PartialEq)]
 pub struct OrdDecimal(Decimal);
 
 impl OrdDecimal {
+    /// Constructor.
     pub fn from<T>(value: T) -> Self where Decimal: From<T> {
         Self(Decimal::from(value))
     }
