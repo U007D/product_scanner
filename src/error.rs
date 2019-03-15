@@ -32,4 +32,6 @@ pub enum Error {
     PricingNotFoundAtQuantity(Product, NonZeroUsize, PriceList),
     #[display(fmt = "{}: {}", "msg::ERR_INVALID_PRODUCT_MNEMONIC", "_0")]
     InvalidProductMnemonic(char),
+    #[display(fmt = "{}: {}", "msg::ERR_INTERNAL_EXPECTED_UNCONDITIONAL_SOME", "_0")]
+    ExpectedUnconditionalSome(char),
 }

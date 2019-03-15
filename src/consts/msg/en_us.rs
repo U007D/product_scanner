@@ -6,3 +6,4 @@ pub const ERR_PRODUCT_NOT_FOUND: &str = "Error: Product was not found in the pri
 pub const ERR_PRICING_NOT_FOUND_AT_QUANTITY: &str = "Error: No pricing information for `product` at `quantity` in `product price list`: ";
 pub const ERR_INTERNAL_ZERO_USED_WITH_NON_ZERO_TYPE: &str = "Internal error: Invalid constant value supplied--cannot use 0 with a `NonZero*` type";
 pub const ERR_INVALID_PRODUCT_MNEMONIC: &str = "Error: Invalid product mnemonic supplied.  No corresponding `Product` found";
+pub const ERR_INTERNAL_EXPECTED_UNCONDITIONAL_SOME: &str = "Internal Error: `None` encountered when an unconditional `Some` was expected";

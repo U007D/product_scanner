@@ -11,6 +11,6 @@ impl NonZeroUsizeExt for NonZeroUsize {
     fn checked_add(&self, rhs: usize) -> Option<Self> {
         self.get()
             .checked_add(rhs)
-            .and_then(|v| NonZeroUsize::new(v))
+            .and_then(NonZeroUsize::new)
     }
 }

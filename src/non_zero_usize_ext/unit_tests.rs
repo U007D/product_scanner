@@ -1,3 +1,4 @@
+#![allow(clippy::option_unwrap_used)]
 use super::*;
 use std::usize;
 

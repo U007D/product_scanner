@@ -35,52 +35,54 @@ impl Terminal {
     }
 
     fn calc_line_total(&self, prod: Product, nz_quant: NonZeroUsize) -> Result<Decimal> {
-        let mut quant = nz_quant.get();
+        let mut quant = dbg!(nz_quant.get());
         self.price_list
             .product_price_list(prod)
             .ok_or_else(|| Error::ProductNotFound(prod, self.price_list.clone()))
-            .and_then(|prod_price_list|
+            .and_then(|prod_price_list| {
                   prod_price_list.iter()
                                  .filter_map(|quant_price| {
-                                     let line_quant = quant_price.quantity.get();
-                                     match line_quant <= quant {
+                                     let price_list_quant = quant_price.quantity.get();
+                                     match price_list_quant <= quant {
                                          true => {
-                                             Some(
-                                                 quant.checked_div(line_quant)
-                                                      .ok_or_else(|| Error::IntegerOverflow(Op::Div(quant, line_quant)))
-                                                      .and_then(|line_quant|
-                                                          Decimal::from(line_quant)
-                                                                  .checked_mul(&quant_price.price)
-                                                                  .ok_or_else(|| Error::DecimalOverflow(
-                                                                      Op::Mul(Decimal::from(line_quant),
-                                                                              quant_price.price.clone())))
-                                                                  .and_then(|line_tot|
-                                                                      quant.checked_rem(line_quant)
-                                                                           .ok_or_else(|| Error::IntegerOverflow(
-                                                                               Op::Rem(quant, line_quant)))
-                                                                           .and_then(|quant_rem| {
-                                                                               quant = quant_rem;
-                                                                               Ok(line_tot)
-                                                                           }))))
+                                             Some(quant.checked_div(price_list_quant)
+                                                       .ok_or_else(|| Error::IntegerOverflow(Op::Div(quant,
+                                                                                                     price_list_quant)))
+                                                       .and_then(|line_quant|
+                                                           Decimal::from(line_quant)
+                                                                   .checked_mul(&quant_price.price)
+                                                                   .ok_or_else(|| Error::DecimalOverflow(
+                                                                       Op::Mul(Decimal::from(line_quant),
+                                                                               quant_price.price.clone())))
+                                                                   .and_then(|line_tot|
+                                                                       quant.checked_rem(dbg!(price_list_quant))
+                                                                            .ok_or_else(|| Error::IntegerOverflow(
+                                                                                Op::Rem(quant, price_list_quant)))
+                                                                            .and_then(|quant_rem| {
+                                                                                quant = quant_rem;
+                                                                                Ok(line_tot)
+                                                                            }))))
                                          },
                                          false => None,
                                      }
                                  })
-                                 .try_fold(
+                                 .fold(
                                      Option::<Result<Decimal>>::None,
                                      |tot, line_tot|
-                                        line_tot.and_then(|lt|
+                                        Some(line_tot.and_then(|lt|
                                             tot.map_or_else(|| Ok(lt.clone()),
                                                             |t_result|
                                                                 t_result.and_then(|t|
                                                                     t.checked_add(&lt)
-                                                                    .ok_or_else(||
-                                                                        Error::DecimalOverflow(Op::Add(t, lt.clone())))
-                                                                    .and_then(|t| Ok(t))))))
-                                 .unwrap_or_else(|| Err(Error::PricingNotFoundAtQuantity(prod,
-                                                                                         nz_quant,
-                                                                                         self.price_list.clone())))
-            )
+                                                                     .ok_or_else(||
+                                                                         Error::DecimalOverflow(
+                                                                             Op::Add(t, lt.clone()))))
+                                                                     .and_then(Ok)))))
+                                 .unwrap_or_else(||
+                                     Err(Error::PricingNotFoundAtQuantity(prod,
+                                                                          nz_quant,
+                                                                          self.price_list.clone())))
+            })
 }
 
     fn consolidate_product_list<I>(&self, prod_list: I) -> Result<impl Iterator<Item = (Product, NonZeroUsize)>>
